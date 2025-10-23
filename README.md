@@ -65,41 +65,14 @@ This project contains both the **backend API** (Node.js + Express + GraphQL + Se
 ```bash
 cd backend
 npm start
-Then open GraphiQL at 👉 http://localhost:8000/
+
 
 2. Run Frontend
 
 Copy code
 cd frontend
-npm start
+npm run dev
 Then open the web app at 👉 http://localhost:3000/
 
 ⚡ Multi-Package Automation
 Once Node.js, Docker (for MySQL), and your configuration are set up correctly, you can manage both packages easily.
-
-🧩 Setup
-Install both frontend and backend dependencies with a single command:
-
-Copy code
-npm run setup
-
-💻 Development
-Run Backend and Frontend Together
-bash
-
-npm run start
-Backend: http://localhost:8000/
-
-Frontend: http://localhost:3000/
-
-Run Backend Only
-
-Copy code
-npm run start:backend
-Opens GraphiQL at 👉 http://localhost:8000/
-
-Run Frontend Only
-bash
-
-npm run start:frontend
-Opens the web app at 👉 http://localhost:3000/
