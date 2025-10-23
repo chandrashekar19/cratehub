@@ -20,10 +20,7 @@
 - Developers with basic knowledge on React exploring advance React projects
 - Scalable project structure and code
 - Multi-package scripts
-- Sample project with combination of all above
-
-## Screenshots and GIFs
-Click on image to view fullscreen and zoom
+- Sample project with combination of all above .
 
 ## Setup and Running
 - Prerequisites
