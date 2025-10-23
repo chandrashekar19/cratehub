@@ -11,19 +11,13 @@
 ## Features
 - Modular and easily scalable code structure
 - Emphasis on developer experience
-- UI components in separate folder which can be swapped for your favorite UI framework easily
-- GraphQL schema with associations
-- Database migration and data seeding
-- User authentication using JSON Web Tokens with GraphQL API
-- File upload feature with GraphQL
-- React storybook demonstrating UI components for web
-- Server side rendering
+- UI components in separate folder which can be swapped for your favorite UI framework easily .
+- Database migration and data seeding .
 - Multi-package setup and dev scripts for an automated dev experiance
 
 
 ## Useful for
 - Developers with basic knowledge on React exploring advance React projects
-- Exploring GraphQL
 - Scalable project structure and code
 - Multi-package scripts
 - Sample project with combination of all above
@@ -31,18 +25,10 @@
 ## Screenshots and GIFs
 Click on image to view fullscreen and zoom
 
-### Desktop
-[IMAGE](https://github.com/atulmy/atulmy.github.io/blob/master/images/crate/desktop-all-with-link.png)
-
-![Crate Desktop](https://raw.githubusercontent.com/atulmy/atulmy.github.io/master/images/crate/desktop-all-with-link.png)
-
-
 ## Setup and Running
 - Prerequisites
   - Node
   - MySQL (or Postgres / Sqlite / MSSQL)
-- Clone repo `git clone git@github.com:atulmy/crate.git crate`
-- Switch to `code` directory `cd code`
 - Configurations
   - Modify `/api/src/config/database.json` for database credentials
   - Modify `/api/.env` for PORT (optional)
