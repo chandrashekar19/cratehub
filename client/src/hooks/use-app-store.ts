@@ -1,12 +1,12 @@
 import { create } from "zustand"
 import { devtools } from "zustand/middleware"
+import { api } from "@/lib/api"
 
-// ----- Types -----
 export interface User {
   id: number
   name: string
   email: string
-  role?: string
+  role: "USER" | "ADMIN"
 }
 
 export interface Product {
@@ -35,15 +35,22 @@ export interface Crate {
   image?: string
 }
 
-// ----- State Interface -----
-interface AppState {
+// ----- Load persisted auth -----
+const savedUser = localStorage.getItem("auth_user")
+const savedToken = localStorage.getItem("auth_token")
+
+const initialUser = savedUser ? (JSON.parse(savedUser) as User) : null
+const initialToken = savedToken ? savedToken : null
+
+export interface AppState {
   loading: boolean
   setLoading: (value: boolean) => void
 
   // Auth
   user: User | null
+  token: string | null
   isAuthenticated: boolean
-  setUser: (user: User | null) => void
+  setAuth: (user: User, token: string) => void
   logout: () => void
 
   // Products
@@ -63,77 +70,66 @@ interface AppState {
   reset: () => void
 }
 
-// ----- Load user on start -----
-const savedUser = localStorage.getItem("user")
-const parsedUser = savedUser ? (JSON.parse(savedUser) as User) : null
-
-// ----- Zustand Store -----
 export const useAppStore = create<AppState>()(
   devtools((set) => ({
-    // Common
     loading: false,
     setLoading: (value) => set({ loading: value }),
 
-    // Auth Slice
-    user: parsedUser,
-    isAuthenticated: !!parsedUser,
+    // Auth
+    user: initialUser,
+    token: initialToken,
+    get isAuthenticated() {
+      return !!(initialUser && initialToken)
+    },
 
-    setUser: (user) => {
-      if (user) {
-        localStorage.setItem("user", JSON.stringify(user))
-      } else {
-        localStorage.removeItem("user")
-      }
-      set({ user, isAuthenticated: !!user })
+    setAuth: (user, token) => {
+      localStorage.setItem("auth_user", JSON.stringify(user))
+      localStorage.setItem("auth_token", token)
+      set({ user, token })
     },
 
     logout: () => {
-      localStorage.removeItem("user")
-      set({ user: null, isAuthenticated: false })
+      localStorage.removeItem("auth_user")
+      localStorage.removeItem("auth_token")
+      set({ user: null, token: null })
     },
 
-    // Product Slice
+    // Products
     products: [],
     fetchProducts: async () => {
+      set({ loading: true })
       try {
-        const res = await fetch("/api/products")
-        const data = (await res.json()) as Product[]
+        const { data } = await api.get("/products")
         set({ products: data })
-      } catch {
-        console.error("Failed to load products")
+      } finally {
+        set({ loading: false })
       }
     },
 
-    // Subscription Slice
+    // Subscriptions
     subscriptions: [],
     subscriptionByUser: [],
-
     fetchSubscriptions: async () => {
-      const res = await fetch("/api/subscriptions")
-      const data = (await res.json()) as Subscription[]
+      const { data } = await api.get("/subscriptions")
       set({ subscriptions: data })
     },
-
     fetchSubscriptionsByUser: async () => {
-      const res = await fetch("/api/subscriptions/me")
-      const data = (await res.json()) as Subscription[]
+      const { data } = await api.get("/subscriptions/me")
       set({ subscriptionByUser: data })
     },
 
-    // Crate Slice
+    // Crates
     crates: [],
     fetchCrates: async () => {
-      const res = await fetch("/api/crates")
-      const data = (await res.json()) as Crate[]
+      const { data } = await api.get("/crates")
       set({ crates: data })
     },
 
-    // Global Reset
     reset: () =>
       set({
         loading: false,
         user: null,
-        isAuthenticated: false,
+        token: null,
         products: [],
         subscriptions: [],
         subscriptionByUser: [],

@@ -4,7 +4,7 @@ import type { FC } from "react"
 import { Link } from "react-router-dom"
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import type { Product } from "@/apis/products"
+import type { Product } from "@/services/products"
 import { productRoutes } from "@/routes/product-routes"
 
 interface ProductItemProps {

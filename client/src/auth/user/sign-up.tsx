@@ -1,16 +1,13 @@
-
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Helmet } from "react-helmet-async"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
-import { useAppStore } from "@/hooks/use-app-store"
+import { signup } from "@/services/auth"
 
 export function Signup() {
   const navigate = useNavigate()
-  const { setUser } = useAppStore()
 
   const [form, setForm] = useState({
     name: "",
@@ -27,26 +24,14 @@ export function Signup() {
     e.preventDefault()
     setLoading(true)
 
-    try {
-      const res = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      })
+    const { user, error } = await signup(form.name, form.email, form.password)
 
-      if (!res.ok) throw new Error()
-
-      const data = await res.json()
-
-      toast.success("Account created successfully!")
-      setUser(data.user)
-
-      navigate("/user/login")
-    } catch {
-      toast.error("Signup failed. Please try again.")
-    } finally {
-      setLoading(false)
+    if (!error && user) {
+      // ✅ Auto login now handled inside signup service
+      navigate("/crates") // You can update redirect here later
     }
+
+    setLoading(false)
   }
 
   return (
@@ -98,7 +83,7 @@ export function Signup() {
                   <Loader2 className="w-4 h-4 animate-spin" /> Creating...
                 </>
               ) : (
-                "Signup"
+                "Sign up"
               )}
             </Button>
           </form>
@@ -115,4 +100,4 @@ export function Signup() {
   )
 }
 
-export default Signup;
+export default Signup

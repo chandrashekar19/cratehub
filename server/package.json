@@ -9,7 +9,8 @@
     "start": "node dist/server.js",
     "prisma:generate": "tsx scripts/prisma-generate.ts",
     "prisma:migrate": "tsx scripts/prisma-migrate.ts",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "seed": "tsx prisma/seed.ts"
   },
   "keywords": [],
   "author": "",

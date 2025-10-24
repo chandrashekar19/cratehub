@@ -1,16 +1,15 @@
-"use client"
-
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
-import { toast } from "sonner"
-import { useAppStore } from "@/hooks/use-app-store"
+import { login } from "@/services/auth"
+
+
 
 export function Login() {
   const navigate = useNavigate()
-  const { setUser } = useAppStore()
+
 
   const [form, setForm] = useState({ email: "", password: "" })
   const [loading, setLoading] = useState(false)
@@ -19,24 +18,18 @@ export function Login() {
     e.preventDefault()
     setLoading(true)
 
-    try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      })
+    const { user: loggedUser, error } = await login(form.email, form.password)
 
-      if (!res.ok) throw new Error()
-      const data = await res.json()
-
-      setUser(data.user)
-      toast.success("Logged in successfully!")
-      navigate("/")
-    } catch {
-      toast.error("Invalid email or password")
-    } finally {
-      setLoading(false)
+    if (!error && loggedUser) {
+      //  Smart redirect by role
+      if (loggedUser.role === "ADMIN") {
+        navigate("/admin/dashboard")
+      } else {
+        navigate("/crates")
+      }
     }
+
+    setLoading(false)
   }
 
   return (
@@ -64,16 +57,25 @@ export function Login() {
           />
 
           <Button disabled={loading} className="w-full flex gap-2 justify-center">
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Login"}
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" /> Logging in...
+              </>
+            ) : (
+              "Login"
+            )}
           </Button>
         </form>
 
         <p className="text-center text-sm text-muted-foreground">
-          New here? <Link to="/user/signup" className="text-primary underline">Signup</Link>
+          New here?{" "}
+          <Link to="/user/signup" className="text-primary underline">
+            Signup
+          </Link>
         </p>
       </div>
     </div>
   )
 }
 
-export default Login;
+export default Login

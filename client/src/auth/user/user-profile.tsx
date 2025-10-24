@@ -1,21 +1,26 @@
 "use client"
 
+import { useEffect } from "react"
 import { Helmet } from "react-helmet-async"
 import { Button } from "@/components/ui/button"
 import { Link, useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import { useAppStore } from "@/hooks/use-app-store"
 
+
 export function UserProfile() {
   const navigate = useNavigate()
-  
   const { user, logout } = useAppStore()
-  
-  if (!user) {
-    toast.error("Please login to view your profile")
-    navigate("/user/login")
-    return null
-  }
+
+  //  Redirect if logged out
+  useEffect(() => {
+    if (!user) {
+      toast.error("Please login to view your profile")
+      navigate("/user/login")
+    }
+  }, [user, navigate])
+
+  if (!user) return null
 
   function handleLogout() {
     logout()
@@ -32,18 +37,28 @@ export function UserProfile() {
       <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-6">
         <h1 className="text-3xl font-bold mb-2">My Profile</h1>
         <p className="text-muted-foreground mb-6">
-          Manage your account details & subscriptions.
+          Manage your account & subscriptions
         </p>
 
-        <div className="bg-background px-6 py-8 rounded-lg shadow-md space-y-2 w-full max-w-sm">
+        <div className="bg-background px-6 py-8 rounded-lg shadow-md w-full max-w-sm space-y-3">
           <p className="text-xl font-semibold">{user.name}</p>
-          <p className="text-sm text-muted-foreground mb-4">{user.email}</p>
+          <p className="text-sm text-muted-foreground">{user.email}</p>
 
-          <Link to="/user/subscriptions" className="w-full block">
+          {user.role && (
+            <span className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary">
+              {user.role}
+            </span>
+          )}
+
+          <Link to="/user/subscriptions" className="block">
             <Button className="w-full">View Subscriptions</Button>
           </Link>
 
-          <Button variant="secondary" className="w-full" onClick={handleLogout}>
+          <Button
+            variant="secondary"
+            className="w-full"
+            onClick={handleLogout}
+          >
             Logout
           </Button>
         </div>

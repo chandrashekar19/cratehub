@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Loader2, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { deleteSubscription, type Subscription } from "@/apis/subscriptions"
+import { deleteSubscription, type Subscription } from "@/services/subscriptions"
 
 interface SubscriptionItemProps {
   subscription: Subscription

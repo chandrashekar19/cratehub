@@ -1,6 +1,6 @@
 "use client"
 
-import { fetchSubscriptionsByUser, type Subscription } from "@/apis/subscriptions"
+import { fetchSubscriptionsByUser, type Subscription } from "@/services/subscriptions"
 import { EmptyMessage } from "@/components/common/empty-message"
 import { Loading } from "@/components/common/loading"
 import { SubscriptionItem } from "@/components/subscriptions/subscription-item"
