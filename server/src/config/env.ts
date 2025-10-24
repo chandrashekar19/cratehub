@@ -2,5 +2,5 @@ import "dotenv/config"
 
 export const PORT = Number(process.env.PORT ?? 3000)
 export const NODE_ENV = process.env.NODE_ENV ?? "development"
-export const JWT_SECRET = process.env.JWT_SECRET ?? "dev-secret"
+export const JWT_SECRET: string = process.env.JWT_SECRET || "fallback-secret"
 export const DATABASE_URL = process.env.DATABASE_URL!

@@ -1,10 +1,15 @@
 {
-  "name": "backend",
+  "name": "server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "prisma:generate": "tsx scripts/prisma-generate.ts",
+    "prisma:migrate": "tsx scripts/prisma-migrate.ts",
+    "prisma:studio": "prisma studio"
   },
   "keywords": [],
   "author": "",
