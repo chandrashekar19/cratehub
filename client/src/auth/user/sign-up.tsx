@@ -27,8 +27,8 @@ export function Signup() {
     const { user, error } = await signup(form.name, form.email, form.password)
 
     if (!error && user) {
-      // ✅ Auto login now handled inside signup service
-      navigate("/crates") // You can update redirect here later
+      //  Auto login now handled inside signup service
+      navigate("/login") // You can update redirect here later
     }
 
     setLoading(false)

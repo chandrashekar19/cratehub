@@ -44,7 +44,7 @@ export async function fetchProductById(id: number): Promise<Product | null> {
 //  Fetch product by slug
 export async function fetchProductBySlug(slug: string): Promise<Product | null> {
   try {
-    const { data } = await api.get(`${ENDPOINT}/slug/${slug}`)
+    const { data } = await api.get(`${ENDPOINT}/${slug}`)
     return data
   } catch (err) {
     const error = err as AxiosError<ApiError>

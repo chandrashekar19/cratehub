@@ -1,33 +1,32 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
 import { login } from "@/services/auth"
-
-
+import { useAppStore } from "@/hooks/use-app-store"
 
 export function Login() {
   const navigate = useNavigate()
-
+  const { user } = useAppStore()
 
   const [form, setForm] = useState({ email: "", password: "" })
   const [loading, setLoading] = useState(false)
+
+  //  Auto-redirect only when user state becomes available
+  useEffect(() => {
+    if (user) {
+      if (user.role === "ADMIN") navigate("/admin/dashboard", { replace: true })
+      else navigate("/crates", { replace: true })
+    }
+  }, [user, navigate])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
 
-    const { user: loggedUser, error } = await login(form.email, form.password)
-
-    if (!error && loggedUser) {
-      //  Smart redirect by role
-      if (loggedUser.role === "ADMIN") {
-        navigate("/admin/dashboard")
-      } else {
-        navigate("/crates")
-      }
-    }
+    // only updates Zustand (no redirect here)
+    await login(form.email, form.password)
 
     setLoading(false)
   }

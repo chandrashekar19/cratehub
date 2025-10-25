@@ -1,35 +1,32 @@
-"use client"
 
 import { useEffect, useState } from "react"
-
 import { toast } from "sonner"
 import { Loading } from "../common/loading"
 import { EmptyMessage } from "../common/empty-message"
 import { ProductItem } from "./product-item"
+import type { Product } from "@/services/products"
+import { api } from "@/lib/api"
 
 interface RelatedProductsProps {
   productId: number
 }
 
 export default function RelatedProducts({ productId }: RelatedProductsProps) {
-  const [related, setRelated] = useState<any[]>([])
+  const [related, setRelated] = useState<Product[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    loadRelated()
+    if (productId) loadRelated()
   }, [productId])
 
   async function loadRelated() {
-    setIsLoading(true)
-
     try {
-      const res = await fetch(`/api/products/${productId}/related`)
-      if (!res.ok) throw new Error()
-
-      const data = await res.json()
-      setRelated(data)
-    } catch {
-      toast.error("Failed to fetch related products")
+      setIsLoading(true)
+      const { data } = await api.get(`/products/${productId}/related`)
+      setRelated(data || [])
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to load related products ❌")
     } finally {
       setIsLoading(false)
     }
@@ -37,8 +34,7 @@ export default function RelatedProducts({ productId }: RelatedProductsProps) {
 
   if (isLoading) return <Loading message="Loading related products..." />
 
-  if (related.length === 0)
-    return <EmptyMessage message="No related products to show." />
+  if (!related.length) return <EmptyMessage message="No related products to show." />
 
   return (
     <section className="container mx-auto py-10 grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-6">

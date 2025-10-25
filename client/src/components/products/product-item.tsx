@@ -1,4 +1,3 @@
-"use client"
 
 import type { FC } from "react"
 import { Link } from "react-router-dom"
@@ -13,6 +12,10 @@ interface ProductItemProps {
 }
 
 export const ProductItem: FC<ProductItemProps> = ({ product, className }) => {
+  const imageUrl = product.image?.startsWith("http")
+    ? product.image
+    : `/uploads/${product.image}`
+
   return (
     <Link
       to={productRoutes.product.path(product.slug)}
@@ -20,7 +23,7 @@ export const ProductItem: FC<ProductItemProps> = ({ product, className }) => {
     >
       <Card className="overflow-hidden transition shadow-sm hover:shadow-md">
         <img
-          src={product.image}
+          src={imageUrl}
           alt={product.name}
           className="w-full h-56 object-cover transition group-hover:scale-105"
         />
@@ -34,3 +37,5 @@ export const ProductItem: FC<ProductItemProps> = ({ product, className }) => {
     </Link>
   )
 }
+
+export default ProductItem

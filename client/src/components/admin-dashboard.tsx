@@ -1,4 +1,3 @@
-"use client"
 
 import { useEffect, useState } from "react"
 import { Helmet } from "react-helmet-async"
@@ -7,6 +6,7 @@ import { AdminMenu } from "@/components/admin-menu"
 import { Package, Box, Users, CreditCard, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import { api } from "@/lib/api"
 
 interface DashboardStats {
   products: number
@@ -20,46 +20,26 @@ export function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    fetchDashboardStats()
+    loadStats()
   }, [])
 
-  async function fetchDashboardStats() {
+  async function loadStats() {
     try {
       setIsLoading(true)
-      const res = await fetch("/api/admin/stats")
-      if (!res.ok) throw new Error("Failed to fetch dashboard stats")
-      const data = await res.json()
+      const { data } = await api.get<DashboardStats>("/admin/stats")
       setStats(data)
-    } catch {
-      toast.error("Error fetching dashboard stats", {
-        description: "Please check your server connection.",
-      })
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to load dashboard")
     } finally {
       setIsLoading(false)
     }
   }
 
   const cards = [
-    {
-      title: "Products",
-      value: stats?.products ?? 0,
-      icon: <Package className="w-6 h-6 text-primary" />,
-    },
-    {
-      title: "Crates",
-      value: stats?.crates ?? 0,
-      icon: <Box className="w-6 h-6 text-primary" />,
-    },
-    {
-      title: "Users",
-      value: stats?.users ?? 0,
-      icon: <Users className="w-6 h-6 text-primary" />,
-    },
-    {
-      title: "Subscriptions",
-      value: stats?.subscriptions ?? 0,
-      icon: <CreditCard className="w-6 h-6 text-primary" />,
-    },
+    { title: "Products", value: stats?.products ?? 0, icon: Package },
+    { title: "Crates", value: stats?.crates ?? 0, icon: Box },
+    { title: "Users", value: stats?.users ?? 0, icon: Users },
+    { title: "Subscriptions", value: stats?.subscriptions ?? 0, icon: CreditCard },
   ]
 
   return (
@@ -76,9 +56,9 @@ export function AdminDashboard() {
         </h1>
 
         {isLoading ? (
-          <div className="flex justify-center items-center h-64">
+          <div className="flex justify-center items-center h-64 gap-2">
             <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-            <span className="ml-2 text-muted-foreground text-sm">
+            <span className="text-muted-foreground text-sm">
               Loading dashboard...
             </span>
           </div>
@@ -87,18 +67,16 @@ export function AdminDashboard() {
             {cards.map((card) => (
               <Card
                 key={card.title}
-                className={cn(
-                  "hover:shadow-md transition-shadow border-muted/40"
-                )}
+                className={cn("hover:shadow-md transition-shadow border-muted/40")}
               >
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
                     {card.title}
                   </CardTitle>
-                  {card.icon}
+                  <card.icon className="w-6 h-6 text-primary" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{card.value}</div>
+                  <p className="text-2xl font-bold">{card.value}</p>
                 </CardContent>
               </Card>
             ))}
@@ -108,3 +86,5 @@ export function AdminDashboard() {
     </div>
   )
 }
+
+export default AdminDashboard

@@ -4,7 +4,6 @@ import { useEffect } from "react"
 import { Helmet } from "react-helmet-async"
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-
 import { ArrowRight } from "lucide-react"
 import { useAppStore } from "@/hooks/use-app-store"
 import { Loading } from "@/components/common/loading"
@@ -14,13 +13,14 @@ import { EmptyMessage } from "@/components/common/empty-message"
 export default function WhatsNew() {
   const {
     products,
-    fetchProducts,
+    loadProducts,
+    loading,
     isAuthenticated,
   } = useAppStore()
 
   useEffect(() => {
-    if (products.length === 0) fetchProducts()
-  }, [])
+    loadProducts()
+  }, [loadProducts])
 
   return (
     <>
@@ -38,7 +38,7 @@ export default function WhatsNew() {
 
       {/* Product List */}
       <section className="container mx-auto px-6 py-10">
-        {products.length === 0 ? (
+        {loading ? (
           <Loading message="Loading products..." />
         ) : products.length > 0 ? (
           <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -56,7 +56,6 @@ export default function WhatsNew() {
         <p className="text-muted-foreground mb-4">
           See something you like?
         </p>
-
         <Link to={isAuthenticated ? "/crates" : "/user/signup"}>
           <Button size="lg" className="flex gap-2 mx-auto">
             {isAuthenticated ? "Subscribe" : "Get Started"}

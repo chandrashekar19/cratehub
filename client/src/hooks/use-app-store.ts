@@ -1,46 +1,14 @@
 import { create } from "zustand"
 import { devtools } from "zustand/middleware"
-import { api } from "@/lib/api"
 
-export interface User {
-  id: number
-  name: string
-  email: string
-  role: "USER" | "ADMIN"
-}
+import type { Product } from "@/services/products"
+import type { Crate } from "@/services/crate"
+import type { Subscription } from "@/services/subscriptions"
 
-export interface Product {
-  id: number
-  name: string
-  slug: string
-  description: string
-  image: string
-}
-
-export interface Subscription {
-  id: number
-  createdAt: string
-  crate: {
-    id: number
-    name: string
-    description: string
-    image?: string
-  }
-}
-
-export interface Crate {
-  id: number
-  name: string
-  description: string
-  image?: string
-}
-
-// ----- Load persisted auth -----
-const savedUser = localStorage.getItem("auth_user")
-const savedToken = localStorage.getItem("auth_token")
-
-const initialUser = savedUser ? (JSON.parse(savedUser) as User) : null
-const initialToken = savedToken ? savedToken : null
+import * as productService from "@/services/products"
+import * as crateService from "@/services/crate"
+import * as subscriptionService from "@/services/subscriptions"
+import type { User } from "@/types/user"
 
 export interface AppState {
   loading: boolean
@@ -55,20 +23,24 @@ export interface AppState {
 
   // Products
   products: Product[]
-  fetchProducts: () => Promise<void>
-
-  // Subscriptions
-  subscriptions: Subscription[]
-  subscriptionByUser: Subscription[]
-  fetchSubscriptions: () => Promise<void>
-  fetchSubscriptionsByUser: () => Promise<void>
+  loadProducts: () => Promise<void>
 
   // Crates
   crates: Crate[]
-  fetchCrates: () => Promise<void>
+  loadCrates: () => Promise<void>
+
+  // Subscriptions
+  subscriptions: Subscription[]
+  mySubscriptions: Subscription[]
+  loadSubscriptions: () => Promise<void>
+  loadMySubscriptions: () => Promise<void>
 
   reset: () => void
 }
+
+// Load stored auth
+const storedUser = localStorage.getItem("auth_user")
+const storedToken = localStorage.getItem("auth_token")
 
 export const useAppStore = create<AppState>()(
   devtools((set) => ({
@@ -76,64 +48,58 @@ export const useAppStore = create<AppState>()(
     setLoading: (value) => set({ loading: value }),
 
     // Auth
-    user: initialUser,
-    token: initialToken,
-    get isAuthenticated() {
-      return !!(initialUser && initialToken)
-    },
+    user: storedUser ? JSON.parse(storedUser) : null,
+    token: storedToken || null,
+    isAuthenticated: !!(storedUser && storedToken),
 
     setAuth: (user, token) => {
       localStorage.setItem("auth_user", JSON.stringify(user))
       localStorage.setItem("auth_token", token)
-      set({ user, token })
+      set({ user, token, isAuthenticated: true })
     },
 
     logout: () => {
       localStorage.removeItem("auth_user")
       localStorage.removeItem("auth_token")
-      set({ user: null, token: null })
+      set({ user: null, token: null, isAuthenticated: false })
     },
 
     // Products
     products: [],
-    fetchProducts: async () => {
-      set({ loading: true })
-      try {
-        const { data } = await api.get("/products")
-        set({ products: data })
-      } finally {
-        set({ loading: false })
-      }
-    },
-
-    // Subscriptions
-    subscriptions: [],
-    subscriptionByUser: [],
-    fetchSubscriptions: async () => {
-      const { data } = await api.get("/subscriptions")
-      set({ subscriptions: data })
-    },
-    fetchSubscriptionsByUser: async () => {
-      const { data } = await api.get("/subscriptions/me")
-      set({ subscriptionByUser: data })
+    loadProducts: async () => {
+      const list = await productService.fetchProducts()
+      set({ products: list })
     },
 
     // Crates
     crates: [],
-    fetchCrates: async () => {
-      const { data } = await api.get("/crates")
-      set({ crates: data })
+    loadCrates: async () => {
+      const list = await crateService.fetchCrates()
+      set({ crates: list })
+    },
+
+    // Subscriptions
+    subscriptions: [],
+    mySubscriptions: [],
+    loadSubscriptions: async () => {
+      const list = await subscriptionService.fetchSubscriptions()
+      set({ subscriptions: list })
+    },
+    loadMySubscriptions: async () => {
+      const list = await subscriptionService.fetchSubscriptionsByUser()
+      set({ mySubscriptions: list })
     },
 
     reset: () =>
       set({
-        loading: false,
         user: null,
         token: null,
+        isAuthenticated: false,
+        loading: false,
         products: [],
-        subscriptions: [],
-        subscriptionByUser: [],
         crates: [],
+        subscriptions: [],
+        mySubscriptions: [],
       }),
   }))
 )

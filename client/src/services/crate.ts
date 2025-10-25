@@ -26,7 +26,7 @@ export async function fetchCrates(): Promise<Crate[]> {
   }
 }
 
-// ✅ Get single crate
+// Get single crate
 export async function fetchCrateById(id: number): Promise<Crate | null> {
   try {
     const { data } = await api.get(`${ENDPOINT}/${id}`)
