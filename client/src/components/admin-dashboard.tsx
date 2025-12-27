@@ -43,40 +43,50 @@ export function AdminDashboard() {
   ]
 
   return (
-    <div>
+    <div className="bg-background min-h-screen">
       <Helmet>
-        <title>Admin Dashboard</title>
+        <title>Admin Dashboard | Crate</title>
       </Helmet>
 
       <AdminMenu />
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
-        <h1 className="text-3xl font-semibold mb-8 text-center">
-          Admin Dashboard
-        </h1>
+      <div className="max-w-6xl mx-auto px-8 py-12 space-y-8 animate-in fade-in duration-500">
+        <div className="space-y-2 text-center lg:text-left">
+          <h1 className="text-4xl font-black tracking-tight text-foreground uppercase">
+            Enterprise <span className="text-primary italic">Overview</span>
+          </h1>
+          <p className="text-muted-foreground text-lg">Real-time metrics and system health indicators.</p>
+        </div>
 
         {isLoading ? (
-          <div className="flex justify-center items-center h-64 gap-2">
-            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-            <span className="text-muted-foreground text-sm">
-              Loading dashboard...
-            </span>
+          <div className="flex flex-col justify-center items-center h-80 gap-4 border-2 border-dashed rounded-3xl">
+            <Loader2 className="w-10 h-10 animate-spin text-primary" />
+            <span className="text-muted-foreground font-medium">Synchronizing data...</span>
           </div>
         ) : (
           <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-            {cards.map((card) => (
+            {cards.map((card, idx) => (
               <Card
                 key={card.title}
-                className={cn("hover:shadow-md transition-shadow border-muted/40")}
+                className={cn(
+                  "group relative overflow-hidden border-border/50 shadow-sm card-hover hover:border-primary/20",
+                  "animate-in fade-in slide-in-from-bottom-4 duration-500"
+                )}
+                style={{ animationDelay: `${idx * 100}ms` }}
               >
+                <div className="absolute top-0 left-0 w-1 h-full bg-primary/20 group-hover:bg-primary transition-colors" />
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
+                  <CardTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors">
                     {card.title}
                   </CardTitle>
-                  <card.icon className="w-6 h-6 text-primary" />
+                  <card.icon className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-all group-hover:scale-110" />
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold">{card.value}</p>
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-4xl font-black">{card.value}</p>
+                    <span className="text-xs font-bold text-emerald-500">+12%</span>
+                  </div>
+                  <p className="text-[10px] uppercase font-bold text-muted-foreground/60 mt-2">Active this month</p>
                 </CardContent>
               </Card>
             ))}

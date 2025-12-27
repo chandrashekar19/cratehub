@@ -1,6 +1,6 @@
 "use client"
 
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -13,74 +13,71 @@ import { adminRoutes } from "@/routes/admin-routes"
 import { crateRoutes } from "@/routes/crate-routes"
 import { userRoutes } from "@/routes/user-routes"
 import Logo from "./logo"
+import { cn } from "@/lib/utils"
 
 export function Header() {
   const { isAuthenticated, user } = useAppStore()
+  const location = useLocation()
 
-  if (!isAuthenticated) return null // ✅ Don't show header at all if logged out
+  if (!isAuthenticated) return null
+
+  const navItems = [
+    { label: "Men", path: homeRoutes.men.path },
+    { label: "Women", path: homeRoutes.women.path },
+    { label: "How It Works", path: homeRoutes.howItWorks.path },
+    { label: "What's New", path: homeRoutes.whatsNew.path },
+  ]
+
+  const rightNavItems = [
+    ...(user?.role === "ADMIN" ? [{ label: "Admin", path: adminRoutes.dashboard.path }] : []),
+    { label: "Crates", path: crateRoutes.list.path },
+    { label: "Subscriptions", path: userRoutes.subscriptions.path },
+    { label: "Profile", path: userRoutes.profile.path },
+  ]
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 bg-primary text-white z-50 shadow-lg px-6 flex items-center justify-between">
-      <div className="flex items-center gap-8">
-        <Logo />
+    <header className="fixed top-0 left-0 right-0 h-16 glass z-50 px-6 flex items-center justify-between border-b shadow-sm">
+      <div className="flex items-center gap-12">
+        <Logo className="text-foreground" />
 
-        <NavigationMenu>
-          <NavigationMenuList className="flex gap-4">
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link to={homeRoutes.men.path}>Men</Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link to={homeRoutes.women.path}>Women</Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link to={homeRoutes.howItWorks.path}>How It Works</Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link to={homeRoutes.whatsNew.path}>What's New</Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
+        <NavigationMenu className="hidden md:flex">
+          <NavigationMenuList className="flex gap-2">
+            {navItems.map((item) => (
+              <NavigationMenuItem key={item.path}>
+                <NavigationMenuLink asChild>
+                  <Link
+                    to={item.path}
+                    className={cn(
+                      "px-4 py-2 text-sm font-medium transition-colors rounded-md hover:bg-muted",
+                      location.pathname === item.path ? "text-primary bg-muted/50" : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            ))}
           </NavigationMenuList>
         </NavigationMenu>
       </div>
 
-      {/* Right side */}
       <NavigationMenu>
-        <NavigationMenuList className="flex gap-4">
-          {user?.role === "ADMIN" && (
-            <NavigationMenuItem>
+        <NavigationMenuList className="flex gap-2">
+          {rightNavItems.map((item) => (
+            <NavigationMenuItem key={item.path}>
               <NavigationMenuLink asChild>
-                <Link to={adminRoutes.dashboard.path}>Admin</Link>
+                <Link
+                  to={item.path}
+                  className={cn(
+                    "px-4 py-2 text-sm font-medium transition-colors rounded-md hover:bg-muted",
+                    location.pathname === item.path ? "text-primary bg-muted/50" : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {item.label}
+                </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
-          )}
-
-          <NavigationMenuItem>
-            <NavigationMenuLink asChild>
-              <Link to={crateRoutes.list.path}>Crates</Link>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-
-          <NavigationMenuItem>
-            <NavigationMenuLink asChild>
-              <Link to={userRoutes.subscriptions.path}>Subscriptions</Link>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-
-          <NavigationMenuItem>
-            <NavigationMenuLink asChild>
-              <Link to={userRoutes.profile.path}>Profile</Link>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
+          ))}
         </NavigationMenuList>
       </NavigationMenu>
     </header>

@@ -1,7 +1,7 @@
 // src/routes/admin.tsx
 
 import { AdminDashboard } from "@/components/admin-dashboard"
-import { CrateList } from "@/components/crate/crate-list"
+import { AdminCrateList } from "@/components/crate/crate-list"
 import { CrateForm } from "@/components/crate/create-form"
 import { ProductForm } from "@/components/products/product-form"
 import { ProductList } from "@/components/products/products-list"
@@ -43,7 +43,7 @@ export const adminRoutes = {
   //  Crates
   crateList: {
     path: "/admin/crates",
-    element: <CrateList />,
+    element: <AdminCrateList />,
     auth: true,
     role: roles.ADMIN,
   },

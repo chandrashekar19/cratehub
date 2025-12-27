@@ -1,9 +1,9 @@
-import { CrateList } from "@/components/crate/crate-list";
+import { CrateCards } from "@/components/crate/crate-cards";
 
 export const crateRoutes = {
   list: {
     path: "/crates",
-    element: <CrateList />,
+    element: <CrateCards />,
     auth: true,
   },
 }

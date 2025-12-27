@@ -29,7 +29,7 @@ export async function login(email: string, password: string): Promise<AuthRespon
     toast.success(`Welcome back, ${user.name}! 👋`)
     return { user }
   } catch (err) {
-      const error = err as AxiosError<ApiError>
+    const error = err as AxiosError<ApiError>
     const message = error.response?.data?.message || "Invalid credentials"
     toast.error(message)
     return { error: message }
